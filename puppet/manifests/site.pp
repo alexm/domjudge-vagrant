@@ -8,10 +8,20 @@ apt::source { 'domjudge':
   key_server        => 'pgp.mit.edu',
 }
 
+Package {
+  require => Apt::Source['domjudge']
+}
+
 package {
   'domjudge-domserver':
+    ensure => present;
+
+  'cgroup-lite':
+    ensure => present;
+
+  'domjudge-judgehost':
     ensure  => present,
-    require => Apt::Source['domjudge']
+    require => Package['cgroup-lite']
 }
 
 file {
