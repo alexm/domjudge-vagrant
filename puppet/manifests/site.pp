@@ -13,3 +13,10 @@ package {
     ensure  => present,
     require => Apt::Source['domjudge']
 }
+
+file {
+  '/etc/apache2/conf.d/domjudge':
+    ensure  => link,
+    target  => '/etc/domjudge/apache.conf',
+    require => Package['domjudge-domserver']
+}
