@@ -1,4 +1,6 @@
 class domjudge::domserver inherits domjudge {
+  include mysql::server
+
   package {
     'domjudge-domserver':
       ensure => present;
