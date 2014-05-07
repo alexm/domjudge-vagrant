@@ -4,7 +4,7 @@ class domjudge::judgehost(
   $mysql_password,
   $mysql_ssl_cert,
   $mysql_ssl_key,
-  $mysql_ssl_ca        = ""
+  $mysql_ssl_ca
 ) inherits domjudge {
 
   include mysql::client

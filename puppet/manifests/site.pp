@@ -2,40 +2,52 @@ node default {
   class { 'apt': always_apt_update => true }
   include stdlib
 
-  file {
-    '/etc/mysql/server-cert.pem':
-      ensure  => present,
-      content => file('/etc/ssl/certs/ssl-cert-snakeoil.pem'),
-      owner   => 'mysql',
-      group   => 'mysql',
-      mode    => '0600',
-      require => Class['mysql::server'];
+  $cert_files = [
+    'ca-cert.pem',
+    'ca-key.pem',
+    'server-cert.pem',
+    'server-key.pem',
+    'client-cert.pem',
+    'client-key.pem',
+  ]
 
-    '/etc/mysql/server-key.pem':
-      ensure  => present,
-      content => file('/etc/ssl/private/ssl-cert-snakeoil.key'),
-      owner   => 'mysql',
-      group   => 'mysql',
-      mode    => '0600',
-      require => Class['mysql::server'];
-  }
+  mysql_cert_file { $cert_files: path => '/vagrant/puppet/files/certs' }
 
-  $mysql_options = {
+  $db_options = {
     'mysql_database' => 'domjudge',
     'mysql_user'     => 'domjudge_jury',
     'mysql_password' => 'vagrant',
-    'mysql_ssl_cert' => '/etc/mysql/server-cert.pem',
-    'mysql_ssl_key'  => '/etc/mysql/server-key.pem',
+    'mysql_ssl_ca'   => '/etc/mysql/ca-cert.pem',
   }
 
-  $domserver_options = merge($mysql_options, {
+  $domserver_options = merge($db_options, {
     'mysql_root_password' => 'vagrant',
+    'mysql_ssl_cert'      => '/etc/mysql/server-cert.pem',
+    'mysql_ssl_key'       => '/etc/mysql/server-key.pem',
+  })
+
+  $judgehost_options = merge($db_options, {
+    'mysql_ssl_cert' => '/etc/mysql/client-cert.pem',
+    'mysql_ssl_key'  => '/etc/mysql/client-key.pem',
   })
 
   $domjudge_classes = {
     'domjudge::domserver' => $domserver_options,
-    'domjudge::judgehost' => $mysql_options,
+    'domjudge::judgehost' => $judgehost_options,
   }
 
   create_resources('class', $domjudge_classes)
+}
+
+define mysql_cert_file($path)
+{
+  file{
+    "/etc/mysql/$name":
+      ensure  => present,
+      source  => "${path}/${name}",
+      owner   => 'mysql',
+      group   => 'mysql',
+      mode    => '0600',
+      require => Class['mysql::server'];
+  }
 }
