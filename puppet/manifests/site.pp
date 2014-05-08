@@ -11,7 +11,7 @@ node default {
     'client-key.pem',
   ]
 
-  mysql_cert_file { $cert_files: path => '/vagrant/puppet/files/certs' }
+  mysql_cert_file { $cert_files: path => '/vagrant/puppet/private/certs' }
 
   $db_options = {
     'mysql_database' => 'domjudge',
