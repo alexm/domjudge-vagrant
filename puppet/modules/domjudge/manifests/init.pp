@@ -1,6 +1,10 @@
 class domjudge {
   include apt
 
+  if $::osfamily != 'Debian' {
+    fail("Unsupported osfamily: ${::osfamily}, module domjudge only supports osfamily Debian.")
+  }
+
   apt::source { 'domjudge':
     location          => 'http://non-gnu.uvt.nl/debian',
     release           => 'squeeze',
