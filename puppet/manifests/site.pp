@@ -10,8 +10,9 @@ node default {
   $dbpass   = 'vagrant'
 
   class { 'mysql::server':
-    root_password    => 'vagrant',
-    override_options => {
+    root_password      => 'vagrant',
+    restart            => true,
+    override_options   => {
       'mysqld'         => {
         'bind-address' => $dbserver,
         'ssl'          => 'true',
