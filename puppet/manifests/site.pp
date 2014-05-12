@@ -40,6 +40,12 @@ node default {
     },
   }
 
+  # puppetlabs-mysql does not support requiring ssl option
+  exec { "require ssl for ${dbuser} in mysql":
+    command => "/usr/bin/mysql -e \"GRANT USAGE ON *.* TO '${dbuser}'@'${dbserver}' REQUIRE SSL;\"",
+    require => Class['mysql::server'],
+  }
+
   class { 'domjudge::domserver':
     dbpass   => $dbpass,
     dbserver => $dbserver,
