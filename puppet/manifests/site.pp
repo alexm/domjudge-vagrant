@@ -9,6 +9,31 @@ node default {
   $dbuser   = 'domjudge_jury'
   $dbpass   = 'vagrant'
 
+  # mysqld apparmor profile won't read PEM files
+  # unless they're inside /etc/mysql
+  file {
+    '/etc/mysql/ca-cert.pem':
+      ensure => present,
+      source => "${certs}/ca-cert.pem",
+      owner  => 'root',
+      group  => 'mysql',
+      mode   => '0640';
+
+    '/etc/mysql/server-cert.pem':
+      ensure => present,
+      source => "${certs}/server-cert.pem",
+      owner  => 'root',
+      group  => 'mysql',
+      mode   => '0640';
+
+    '/etc/mysql/server-key.pem':
+      ensure => present,
+      source => "${certs}/server-key.pem",
+      owner  => 'root',
+      group  => 'mysql',
+      mode   => '0640';
+  }
+
   class { 'mysql::server':
     root_password      => 'vagrant',
     restart            => true,
@@ -16,9 +41,9 @@ node default {
       'mysqld'         => {
         'bind-address' => $dbserver,
         'ssl'          => 'true',
-        'ssl-ca'       => "${certs}/ca-cert.pem",
-        'ssl-cert'     => "${certs}/server-cert.pem",
-        'ssl-key'      => "${certs}/server-key.pem",
+        'ssl-ca'       => '/etc/mysql/ca-cert.pem',
+        'ssl-cert'     => '/etc/mysql/server-cert.pem',
+        'ssl-key'      => '/etc/mysql/server-key.pem',
       }
     },
     grants => {
