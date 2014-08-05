@@ -1,4 +1,7 @@
 #!/usr/bin/env php
+#
+# http://www.mysqlperformanceblog.com/2013/06/22/setting-up-mysql-ssl-and-secure-connections/
+#
 <?php
 $HOST = "10.0.2.15";
 $USER = "domjudge_jury";
