@@ -6,6 +6,9 @@
 set -e
 set -x
 
+mkdir -p puppet/private/certs
+cd puppet/private/certs
+
 # Create CA certificate
 openssl genrsa 2048 > ca-key.pem
 openssl req -new -x509 -nodes -days 3600 \
